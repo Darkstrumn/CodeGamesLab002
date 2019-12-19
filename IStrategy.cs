@@ -58,7 +58,7 @@ namespace DarkTechSystems.Strategies
             }
             protected set
             {
-
+                ;
             }
         }
         public BaseStrategy()
