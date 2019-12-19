@@ -251,14 +251,12 @@ class Solution {
     {
         var ret = new string[n];
         var fizzBuzzStrategy = new DarkTechSystems.Strategies.DefaultStrategy();
-        var strategies = fizzBuzzStrategy.Strategies;
         var model = new {
             data = new object[n]
                 .Select( (v, i) => {
                     var aliases = new {
                         index = i,
                         value = i + 1,                        
-                        //value = (i + 1).ToString()
                         };
                         
                     var output = fizzBuzzStrategy.ProcessStrategies(aliases.value);
@@ -267,7 +265,8 @@ class Solution {
                 })
             .ToArray()
             }; 
-            ret = model.data;
+
+        ret = model.data;
         return ret;
     }
 
