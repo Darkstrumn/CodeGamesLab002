@@ -201,6 +201,9 @@ class Solution {
 
     static string[] FizzBuzz_prototype(int n)
     {
+        /*
+        This version is the hack, it is short quick and self-documenting
+         */
         var ret = new string[n];
         var model = new {
             data = new object[n]
@@ -249,6 +252,9 @@ class Solution {
 
     static string[] FizzBuzz_solid(int n)
     {
+        /*
+        This version is the SOLID (engineering varient, it is bigger self-documenting, and follows Solid pricipals for future maintainability (single namespace file for ez prototyping, normally would be separate files for each interface and class)
+         */
         var ret = new string[n];
         var fizzBuzzStrategy = new DarkTechSystems.Strategies.DefaultStrategy();
         var model = new {

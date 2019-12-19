@@ -27,17 +27,6 @@ namespace DarkTechSystems.Strategies
         {
             get
             {
-                var defaultStrategy = System.Reflection.Assembly
-                    .GetExecutingAssembly()
-                    .GetTypes()
-                    .Where(xtype => xtype
-                        .GetInterfaces()
-                        .Contains(typeof(IStrategy))
-                        && xtype.AssemblyQualifiedName.Contains("DefaultStrategy")
-                    )
-                    .Select( xtype => (IStrategy)( xtype.GetConstructor((System.Type.EmptyTypes)) )?.Invoke(null) )
-                    .FirstOrDefault();
-
                 _strategies = System.Reflection.Assembly
                     .GetExecutingAssembly()
                     .GetTypes()
@@ -45,14 +34,12 @@ namespace DarkTechSystems.Strategies
                         .GetInterfaces()
                         .Contains(typeof(IStrategy))
                         && !xtype.AssemblyQualifiedName.Contains("BaseStrategy")
-                        && !xtype.AssemblyQualifiedName.Contains("DefaultStrategy")
                         )
                     .Select( xtype => (IStrategy)( xtype.GetConstructor((System.Type.EmptyTypes)) )?.Invoke(null) )
                         .ToList();
 
-                _strategies.Add(defaultStrategy);            
-
-                _strategies.Sort((a, b) => (a.StrategyOrder.ToString()[0].CompareTo(b.StrategyOrder.ToString()[0])));;
+                /*<string sort>*/ //_strategies.Sort((a, b) => (a.StrategyOrder.ToString()[0].CompareTo(b.StrategyOrder.ToString()[0])));;
+                /*<numeric sort>*/ _strategies.Sort((a, b) => (a.StrategyOrder.CompareTo(b.StrategyOrder)));
 
                 return _strategies;
             }
