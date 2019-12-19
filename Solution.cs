@@ -11,9 +11,8 @@ using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Text;
 using System;
-
 class Solution {
-      static void TimeConversion(string s) {
+    static void TimeConversion(string s) {
         var parts = s.Split(':');
         var hh = Convert.ToInt32(parts[0]);
         var mm = Convert.ToInt32(parts[1]);
@@ -154,7 +153,7 @@ class Solution {
         return ret;
     }
 
-   static long candies(int n, int[] arr) {
+    static long candies(int n, int[] arr) {
         var ret = 0;
         var streak = 0;
         var model = new {
@@ -251,6 +250,8 @@ class Solution {
     static string[] FizzBuzz_solid(int n)
     {
         var ret = new string[n];
+        var fizzBuzzStrategy = new DarkTechSystems.Strategies.DefaultStrategy();
+        var strategies = fizzBuzzStrategy.Strategies;
         var model = new {
             data = new object[n]
                 .Select( (v, i) => {
@@ -260,33 +261,7 @@ class Solution {
                         //value = (i + 1).ToString()
                         };
                         
-                    var strategies = (new dynamic[]{
-                        new {
-                            strategyId = "Fizz",
-                            inputUnderTest = aliases.value,
-                            logicResult = (aliases.value) % 3,
-                            triggered = (aliases.value) % 3 == 0,
-                            value = "Fizz"
-                            },
-                        new {
-                            strategyId = "Buzz",
-                            inputUnderTest = aliases.value,
-                            logicResult = (aliases.value) % 5,
-                            triggered = (aliases.value) % 5 == 0,
-                            value = "Buzz"
-                            },
-                        new {
-                            strategyId = "Number",
-                            inputUnderTest = aliases.value,
-                            logicResult = (aliases.value) % 3 != 0 && (aliases.value) % 5 != 0,
-                            triggered = (aliases.value) % 3 != 0 && (aliases.value) % 5 != 0,
-                            value = aliases.value
-                            },
-                    }).ToList();
-
-                    var output = string.Join("", strategies
-                        .Select( strategy => {return (strategy.triggered ? strategy.value : "");} )
-                        .ToArray());
+                    var output = fizzBuzzStrategy.ProcessStrategies(aliases.value);
                         
                     return output;
                 })
@@ -303,7 +278,7 @@ class Solution {
 
     static void Main(string[] args) {
         var n = 15;
-        var result = FizzBuzz_prototype(n);
+        var result = FizzBuzz_solid(n);
         Console.WriteLine(result);
 /*
         var rankings = new int[]{2,4,2,6,1,7,8,9,2,1};
