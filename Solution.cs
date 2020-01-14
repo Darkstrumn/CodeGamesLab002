@@ -12,6 +12,166 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System;
 class Solution {
+    static int[] TravelingSalesman(Dictionary<string,int> inputPoints){
+        var model = new object[1].Select( (modelValue, modelIndex) => {
+            var rnd = new Random();            
+
+            //diagnostics: refactored for diagnostics (used more thatn once)
+            Func<Dictionary<string,int>, Dictionary<string,int>> calcDistances = (inputs) =>
+                {
+                    var subTotal = 0;
+                    //var origin = inputs.ElementAtOrDefault(0).Value; // if we don't want to include travel to first node from true origin (of the distances)
+                    var origin = 0; // if we want to include travel to first node from true origin
+                    return  inputs.Keys.ToList().Select((sorterKey, sorterIndex) =>{                
+                    var previousPoint = ((sorterIndex - 1) > -1 ? inputs.ElementAtOrDefault(sorterIndex - 1).Value : origin);
+                    var currentPoint = inputs.ElementAtOrDefault(sorterIndex).Value;
+                    var distance = Math.Abs(currentPoint - previousPoint);
+                    subTotal += distance;
+                    return new KeyValuePair<string,int>(sorterKey, distance);
+                    }
+                ).ToDictionary(wp=>wp.Key, wp=>wp.Value);
+                };
+
+            // STEP 1:: find minimum distances between points (sort)
+            var sortedWaypoints = new Dictionary<string,int>(inputPoints.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value));
+ 
+            // STEP 2:: compute distances between points to get sum 
+            var distances = calcDistances (sortedWaypoints);
+            var routeDistance = distances.Values.ToList().Sum();
+
+            //<diagnostics: this is only made part of the object to compare and contrast results>
+            var originalDistances = calcDistances (inputPoints);            
+            var originalRouteDistance = originalDistances.Values.ToList().Sum();
+            //</diagnostics>
+            
+            return new {
+                //<add propetries of the output object here>
+                Cities = inputPoints
+                ,OriginalDistance = originalRouteDistance
+                ,Waypoints = sortedWaypoints
+                ,Distance = routeDistance
+                }; //</model definition>
+            }
+        ) //</(modelValue, modelIndex)>
+        .First(); //</model>
+
+        //diagnostics: show input and output of actions so far
+        System.Diagnostics.Debug.Print($"Points are distances from origin\n");
+
+        foreach(var point in model.Cities.Keys.ToList().Select((v,i) => new {index = i, value = v} ))
+        {
+            System.Diagnostics.Debug.Print($"City waypoint({point.value}) = {model.Cities[point.value]}\n");
+        }
+        
+        System.Diagnostics.Debug.Print($"\nOriginal Route Distance: {model.OriginalDistance} miles \n------------------------------\n");
+
+        foreach(var point in model.Waypoints.Keys.ToList().Select((v,i) => new {index = i, value = v} ))
+        {
+            System.Diagnostics.Debug.Print($"WayPoint({point.value}) = {model.Cities[point.value]}\n");
+        }
+        
+        System.Diagnostics.Debug.Print($"Best Route Distance should sum to last waypoint distance: {model.Distance} miles \n");
+
+        return model.Waypoints.Values.ToArray();
+    }
+
+    static void NEXT(){
+    }
+
+    static void Main(string[] args) {
+        
+        var maxPoints = 5;
+        var inputPoints = new object[maxPoints].Select((index, value) =>{                
+            var rnd = new Random();            
+            var distance = (int)rnd.Next(0,100) + 1; //<<--distances from some origin (simulated)
+            var namearea = "arizonawashingoniowaohiodekodaoregontexas";
+            var nameLength = rnd.Next(4, namearea.Length - 1);
+            var city = string.Join("", new string[nameLength].Select(x => {
+                return namearea[rnd.Next(0,namearea.Length - 1)];
+            }));
+            return new KeyValuePair<string,int>(city, distance);
+                }
+            ).ToDictionary(wp=>wp.Key, wp=>wp.Value);
+        var pointsResult = TravelingSalesman(inputPoints);
+        /*
+        //FunctionMap("ABCD1234");        
+
+        //ABCD?
+        //DCBA?
+        var input = "ABCD?";
+        Console.WriteLine($@" input: {input}");
+        var result = FlipTheScript2(input);
+        Console.WriteLine($@"Result: {result}");
+        //ABCD?EFG
+        //GFED?CBA
+        input = "ABCD?EFG";
+        Console.WriteLine($@" input: {input}");
+        result = FlipTheScript2(input);
+        Console.WriteLine($@"Result: {result}");
+        //-AB^CD?EFG%
+        //-GF^ED?CBA%
+        input = "-AB^CD?EFG%";
+        Console.WriteLine($@" input: {input}");
+        result = FlipTheScript2(input);
+        Console.WriteLine($@"Result: {result}");
+
+        var n = 15;
+        result = string.Join(",", FizzBuzz_solid(n));
+        Console.WriteLine(result);
+        */
+/*
+        var rankings = new int[]{2,4,2,6,1,7,8,9,2,1};
+        //                 int[]{1,2,1,2,1,2,3,4,2,1};
+        long result = candies(rankings.Length, rankings);
+        Console.WriteLine(result.ToString());
+*/
+ 
+ /*
+        var rankings2 = new int[]{2,4,2,6,1,7,8,9,2,1};
+        candies(rankings2.Length, rankings2);
+        rankings2 = new int[]{2,4,3,5,2,6,4,5};
+        //expected           {1,2,1,2,1,2,1,2}
+        candies(rankings2.Length, rankings2);
+        rankings2 = new int[]{9,8,5,6,1,7,8,9,2,1};
+        //expected           {2,2,1,2,1,2,3,4,2,1}
+        candies(rankings2.Length, rankings2);
+        rankings2 = new int[]{2,2,2,6,1,7,6,9,2,1};
+        //expected           {1,1,1,2,1,2,1,2,2,1}
+        candies(rankings2.Length, rankings2);
+        rankings2 = new int[]{0,1,0,6,10,7,8,9,2,10};
+        //expected           {1,2,1,2,3,1,2,3,1,2}
+        candies(rankings2.Length, rankings2);
+*/
+/*
+        var ladders = new int[3][]{
+            new int[] {32,62},
+            new int[] {42,68},
+            new int[] {12,98}
+        };
+        var snakes =  new int[7][]{
+            new int[] {95,13},
+            new int[] {97,25},
+            new int[] {93,37},
+            new int[] {79,27},
+            new int[] {75,19},
+            new int[] {49,47},
+            new int[] {67,17}
+        };
+        int result = quickestWayUp(ladders, snakes);
+        int result = quickestWayUp(ladders, snakes);
+        Console.WriteLine(result.ToString());
+*/
+         //int[] arr = Array.ConvertAll(Console.ReadLine().Split(' '), arrTemp => Convert.ToInt32(arrTemp));
+/*
+        TimeConversion("07:05:45PM");
+        TimeConversion("02:05:45AM");
+        TimeConversion("02:05:45PM");
+        TimeConversion("12:05:45PM");
+        TimeConversion("12:35:59AM");
+        TimeConversion("12:00:00PM");
+        TimeConversion("12:00:00AM");
+*/
+    }
     static void TimeConversion(string s) {
         var parts = s.Split(':');
         var hh = Convert.ToInt32(parts[0]);
@@ -276,66 +436,97 @@ class Solution {
         return ret;
     }
 
+    static string FlipTheScript(string input){
+        var destination = 0; //<←- and to where characters are placed into our output array
+        var output = new char[input.Length];
+        var diagnostics = input.Select( (v, i) => {
+                var innerSource = input.Length - (i + 1);
+                var srcChar = input[input.Length - (i + 1)];
+                var dstChar = input[destination];
+                
+                if (!char.IsLetterOrDigit(dstChar))
+                {
+                    if (output[destination] == char.MinValue)
+                    {
+                        output[destination] = dstChar;
+                        destination++;
+                        return dstChar;
+                    }
+                    destination++;
+                    output[destination] = srcChar;
+                    destination++;
+                    return srcChar;
+                }
+                if (char.IsLetterOrDigit(srcChar))
+                {
+                    output[destination] = srcChar;
+                    destination++;
+                    return srcChar;
+                }
 
-    static void NEXT(){
-
+                output[innerSource] = srcChar;
+                return char.MinValue;
+                }
+            )
+            .ToArray();
+        return string.Join("",output); //<←-we return a character array (as a string, same as input)
     }
 
-    static void Main(string[] args) {
-        var n = 15;
-        var result = FizzBuzz_solid(n);
-        Console.WriteLine(result);
-/*
-        var rankings = new int[]{2,4,2,6,1,7,8,9,2,1};
-        //                 int[]{1,2,1,2,1,2,3,4,2,1};
-        long result = candies(rankings.Length, rankings);
-        Console.WriteLine(result.ToString());
-*/
- 
- /*
-        var rankings2 = new int[]{2,4,2,6,1,7,8,9,2,1};
-        candies(rankings2.Length, rankings2);
-        rankings2 = new int[]{2,4,3,5,2,6,4,5};
-        //expected           {1,2,1,2,1,2,1,2}
-        candies(rankings2.Length, rankings2);
-        rankings2 = new int[]{9,8,5,6,1,7,8,9,2,1};
-        //expected           {2,2,1,2,1,2,3,4,2,1}
-        candies(rankings2.Length, rankings2);
-        rankings2 = new int[]{2,2,2,6,1,7,6,9,2,1};
-        //expected           {1,1,1,2,1,2,1,2,2,1}
-        candies(rankings2.Length, rankings2);
-        rankings2 = new int[]{0,1,0,6,10,7,8,9,2,10};
-        //expected           {1,2,1,2,3,1,2,3,1,2}
-        candies(rankings2.Length, rankings2);
-*/
-/*
-        var ladders = new int[3][]{
-            new int[] {32,62},
-            new int[] {42,68},
-            new int[] {12,98}
-        };
-        var snakes =  new int[7][]{
-            new int[] {95,13},
-            new int[] {97,25},
-            new int[] {93,37},
-            new int[] {79,27},
-            new int[] {75,19},
-            new int[] {49,47},
-            new int[] {67,17}
-        };
-        int result = quickestWayUp(ladders, snakes);
-        int result = quickestWayUp(ladders, snakes);
-        Console.WriteLine(result.ToString());
-*/
-         //int[] arr = Array.ConvertAll(Console.ReadLine().Split(' '), arrTemp => Convert.ToInt32(arrTemp));
-/*
-        TimeConversion("07:05:45PM");
-        TimeConversion("02:05:45AM");
-        TimeConversion("02:05:45PM");
-        TimeConversion("12:05:45PM");
-        TimeConversion("12:35:59AM");
-        TimeConversion("12:00:00PM");
-        TimeConversion("12:00:00AM");
-*/
+    static string FlipTheScript2(string input){
+       var s = 0;
+       var d = input.Length - 1;
+       var o = new char[input.Length];
+       var done = false;
+       while (!done)
+       {
+            var char_s = input[s];
+            var char_d = input[d];
+            var e = 0;
+            if (char.IsLetterOrDigit(char_s))
+            {
+                if (char.IsLetterOrDigit(char_d))
+                {
+                    o[d] = char_s;
+                    o[s] = char_d;
+                    s++;
+                    d--;
+                }
+                else
+                {
+                    o[d] = char_d;
+                    d--;
+                    e++;
+                }
+            }
+            else
+            {
+                o[s] = char_s;
+                s++;
+                e++;
+            }
+
+            if ( d <= s ) {done = true;}
+            if (done && e > 0)
+            {
+                if(o[s] == char.MinValue){ o[s] = char_s;}
+                if(o[d] == char.MinValue){ o[d] = char_d;}
+            }
+       }
+       return string.Join("",o);
+       }
+
+    static void FunctionMap(string input){
+        var counter = 0;
+        var fmap = new Dictionary<string, Action<string>>();
+
+        fmap.Add("debug", (s) =>  {System.Diagnostics.Debug.Print(s);});
+        fmap.Add("counter", (s) => {counter++;});
+
+        fmap["counter"](input);
+        fmap["debug"]($"***:This is a test{counter}! - Data:: {input}\n");
+
+        fmap["counter"](input);
+        fmap["debug"]($"***{counter}:This is a test2!\n");
     }
+
 }

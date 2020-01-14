@@ -38,8 +38,7 @@ namespace DarkTechSystems.Strategies
                     .Select( xtype => (IStrategy)( xtype.GetConstructor((System.Type.EmptyTypes)) )?.Invoke(null) )
                         .ToList();
 
-                /*<string sort>*/ //_strategies.Sort((a, b) => (a.StrategyOrder.ToString()[0].CompareTo(b.StrategyOrder.ToString()[0])));;
-                /*<numeric sort>*/ _strategies.Sort((a, b) => (a.StrategyOrder.CompareTo(b.StrategyOrder)));
+                _strategies.Sort((a, b) => (a.StrategyOrder.CompareTo(b.StrategyOrder)));
 
                 return _strategies;
             }
@@ -55,7 +54,7 @@ namespace DarkTechSystems.Strategies
         }
         virtual public bool IsTriggered(int input)
         {
-            return true;
+            return false;
         }
         virtual public string GetValue(bool truth,int? input = null)
         {
@@ -73,7 +72,7 @@ namespace DarkTechSystems.Strategies
             foreach ( var item in Strategies.Select( (v, i) => new {index = i, strategy = v} ) )
             {
                 var strategy = item.strategy;
-                if(strategy.IsTriggered(input)){System.Diagnostics.Debug.Print( $@"{strategy.StrategyName}" );}
+                if(strategy.IsTriggered(input)){System.Diagnostics.Debug.Print( $"***** Strategy {strategy.StrategyName} - triggered\n" );}
                 result += strategy.GetTriggeredValue(input);
             }
 
@@ -98,26 +97,6 @@ namespace DarkTechSystems.Strategies
 
 namespace DarkTechSystems.Strategies
 {
-    public class Numbers_Strategy : DefaultStrategy
-    {
-        public Numbers_Strategy()
-        {
-            StrategyName = "numbers";
-            StrategyOrder = 2;
-        }
-        override public bool IsTriggered(int input)
-        {
-            return (input) % 3 != 0 && (input) % 5 != 0;
-        }
-        override public string GetValue(bool truth,int? input = null)
-        {
-            return (truth) ? input.ToString() : string.Empty;
-        }
-    }
-}
-
-namespace DarkTechSystems.Strategies
-{
     public class Fizz_Strategy : DefaultStrategy
     {
         public Fizz_Strategy()
@@ -129,9 +108,9 @@ namespace DarkTechSystems.Strategies
         {
             return ((input) % 3 == 0 );
         }
-        override public string GetValue(bool truth,int? input = null)
+        override public string GetValue(bool truth, int? input = null)
         {
-            return (truth) ? "Fizz" : string.Empty;
+            return (truth) ? StrategyName : string.Empty;
         }
     }
 }
@@ -149,9 +128,113 @@ namespace DarkTechSystems.Strategies
         {
             return ((input) % 5 == 0 );
         }
-        override public string GetValue(bool truth,int? input = null)
+        override public string GetValue(bool truth, int? input = null)
         {
-            return (truth) ? "Buzz" : string.Empty;
+            return (truth) ? StrategyName : string.Empty;
         }
     }    
 }
+
+namespace DarkTechSystems.Strategies
+{
+    public class Numbers_Strategy : DefaultStrategy
+    {
+        public Numbers_Strategy()
+        {
+            StrategyName = "Numbers";
+            StrategyOrder = 2;
+        }
+        override public bool IsTriggered(int input)
+        {
+            return (input) % 3 != 0 && (input) % 5 != 0;
+        }
+        override public string GetValue(bool truth, int? input = null)
+        {
+            return (truth) ? input.ToString() : string.Empty;
+        }
+    }
+}
+
+/*
+--For documentation I put this here as well.
+The Prototype version was the basis for the solid type. The prototype fails solid design principles, but also shows why it comes to be.
+The SOLID variant shows the con of the strategy pattern in that the code base can be much larger.
+The code is technically cleaner but is less concise in this case.
+
+    static string[] FizzBuzz_prototype(int n)
+    {
+        /--*
+        This version is the hack, it is short quick and self-documenting
+         *--/
+        var ret = new string[n];
+        var model = new {
+            data = new object[n]
+                .Select( (v, i) => {
+                    var aliases = new {
+                        index = i,
+                        value = i + 1,                        
+                        //value = (i + 1).ToString()
+                        };
+                        
+                    var strategies = (new dynamic[]{
+                        new {
+                            strategyId = "Fizz",
+                            inputUnderTest = aliases.value,
+                            logicResult = (aliases.value) % 3,
+                            triggered = (aliases.value) % 3 == 0,
+                            value = "Fizz"
+                            },
+                        new {
+                            strategyId = "Buzz",
+                            inputUnderTest = aliases.value,
+                            logicResult = (aliases.value) % 5,
+                            triggered = (aliases.value) % 5 == 0,
+                            value = "Buzz"
+                            },
+                        new {
+                            strategyId = "Number",
+                            inputUnderTest = aliases.value,
+                            logicResult = (aliases.value) % 3 != 0 && (aliases.value) % 5 != 0,
+                            triggered = (aliases.value) % 3 != 0 && (aliases.value) % 5 != 0,
+                            value = aliases.value
+                            },
+                    }).ToList();
+
+                    var output = string.Join("", strategies
+                        .Select( strategy => {return (strategy.triggered ? strategy.value : "");} )
+                        .ToArray());
+                        
+                    return output;
+                })
+            .ToArray()
+            }; 
+            ret = model.data;
+        return ret;
+    }
+
+    static string[] FizzBuzz_solid(int n)
+    {
+        /--*
+        This version is the SOLID (engineering varient, it is bigger self-documenting, and follows Solid pricipals for future maintainability (single namespace file for ez prototyping, normally would be separate files for each interface and class)
+         *--/
+        var ret = new string[n];
+        var fizzBuzzStrategy = new DarkTechSystems.Strategies.DefaultStrategy();
+        var model = new {
+            data = new object[n]
+                .Select( (v, i) => {
+                    var aliases = new {
+                        index = i,
+                        value = i + 1,                        
+                        };
+                        
+                    var output = fizzBuzzStrategy.ProcessStrategies(aliases.value);
+                        
+                    return output;
+                })
+            .ToArray()
+            }; 
+
+        ret = model.data;
+        return ret;
+    }
+*/
